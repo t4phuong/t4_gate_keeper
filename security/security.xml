@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="t4_gate_keeper_controller_company_rule" model="ir.rule">
+        <field name="name">Gate Keeper Controller: multi-company access</field>
+        <field name="model_id" ref="model_t4_gate_keeper_controller"/>
+        <field name="domain_force">[('company_id', 'child_of', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="t4_gate_keeper_device_company_rule" model="ir.rule">
+        <field name="name">Gate Keeper Device: multi-company access</field>
+        <field name="model_id" ref="model_t4_gate_keeper_device"/>
+        <field name="domain_force">[('company_id', 'child_of', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>
