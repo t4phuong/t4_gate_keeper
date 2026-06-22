@@ -14,8 +14,9 @@
         'security/ir.model.access.csv',
         'security/security.xml',
         'data/scheduler_cron.xml',
-        'views/GK_company_views.xml',
+        'views/gk_branch_views.xml',
         'views/gate_keeper_views.xml',
+        'views/gk_attendance_log_views.xml',
         'views/GK_menu.xml'
     ],
 }

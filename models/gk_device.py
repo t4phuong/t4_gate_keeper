@@ -32,9 +32,9 @@ class GateKeeperDevice(models.Model):
         help="Controller that manages this device.",
     )
 
-    company_id = fields.Many2one(
-        related="controller_id.company_id",
-        string="Company",
+    branch_id = fields.Many2one(
+        related="controller_id.branch_id",
+        string="Branch",
         store=True,
         readonly=True,
     )

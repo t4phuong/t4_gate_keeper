@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="company_id"/>
+                <field name="branch_id"/>
                 <field name="last_heartbeat_at"/>
                 <field name="last_sync_at"/>
                 <field  name="status" 
@@ -29,7 +29,7 @@
                         <group>
                             <field name="name"/>
                             <field name="serial_number"/>
-                            <field name="company_id"/>
+                            <field name="branch_id"/>
                             <field name="connection_type"/>
                         </group>
                         <group>
@@ -85,7 +85,7 @@
                 <field name="device_role"/>
                 <field name="serial_number"/>
                 <field name="controller_id"/>
-                <field name="company_id"/>
+                <field name="branch_id"/>
                 <field name="last_seen_at"/>
                 <field name="status"
                        widget="badge"
@@ -106,7 +106,7 @@
                         <group>
                             <field name="name"/>
                             <field name="controller_id"/>
-                            <field name="company_id" readonly="1"/>
+                            <field name="branch_id" readonly="1"/>
                             <field name="device_role"/>
                             <field name="status"/>
                         </group>

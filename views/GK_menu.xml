@@ -17,13 +17,13 @@
             sequence="10"/>
   
 
-  <menuitem id="t4_gate_keeper_company_menu" 
+  <menuitem id="t4_gate_keeper_branch_menu" 
   
-            name="Companies" 
+            name="Branches" 
             
             parent="t4_gate_keeper_dashboard_menu" 
             
-            action="t4_gate_keeper_company_action" 
+            action="t4_gate_keeper_branch_action" 
             
             sequence="10"/>
 
@@ -46,6 +46,19 @@
             action="t4_gate_keeper_device_action" 
             
             sequence="30"/>
+
+
+
+  <!-- ### ATTENDANCE LOGS -->
+  <menuitem id="t4_gate_keeper_attendance_log_menu" 
+  
+            name="Attendance Logs" 
+            
+            parent="t4_gate_keeper_menu_root" 
+            
+            action="t4_gate_keeper_attendance_log_action" 
+            
+            sequence="40"/>
 
   
 

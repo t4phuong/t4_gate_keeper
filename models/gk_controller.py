@@ -35,11 +35,10 @@ class T4GateKeeperController(models.Model):
         help="Physical serial number used for maintenance and hardware replacement checks.",
     )
 
-    company_id = fields.Many2one(
-        "res.company",
-        string="Company",
+    branch_id = fields.Many2one(
+        "t4.gate_keeper.branch",
+        string="Branch",
         required=True,
-        default=lambda self: self.env.company,
         index=True,
     )
 
@@ -134,3 +133,8 @@ class T4GateKeeperController(models.Model):
         return self.search([
             ("serial_number", "=", serial_number),
         ], limit=1)
+
+
+    @endpoint(name="test")
+    def test(self):
+        return ""

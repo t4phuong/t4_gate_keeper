@@ -184,6 +184,8 @@ When a modification affects architecture or existing behavior, the assistant mus
 
 Implementation should only proceed after approval.
 
+**CRITICAL RULE:** The AI assistant MUST ALWAYS ask for the developer's explicit agreement before modifying ANY files. Do not proceed with any file modifications until the developer confirms.
+
 ---
 
 ## Backward Compatibility
@@ -492,7 +494,7 @@ from odoo.addons.t4_coreapi.utils import (
 ### Request Body
 
 ```python
-body = get_body(self.env.context)
+body = get_body()
 ```
 
 Used for:
@@ -504,7 +506,7 @@ Used for:
 Example:
 
 ```python
-controller_id = get_body(self.env.context).get("controller_id")
+controller_id = get_body().get("controller_id")
 ```
 
 ---
@@ -512,7 +514,7 @@ controller_id = get_body(self.env.context).get("controller_id")
 ### Query Parameters
 
 ```python
-params = get_params(self.env.context)
+params = get_params()
 ```
 
 Used for:
@@ -523,7 +525,7 @@ Used for:
 Example:
 
 ```python
-device_id = get_params(self.env.context).get("device_id")
+device_id = get_params().get("device_id")
 ```
 
 ---
@@ -548,7 +550,7 @@ class GateKeeperController(models.Model):
 
     @endpoint(name="Testing")
     def test(self):
-        controller_name = get_body(self.env.context).get(
+        controller_name = get_body().get(
             "controller_id"
         )
 
@@ -620,7 +622,7 @@ Example:
 ```python
 @endpoint(name="ControllerHeartbeat")
 def controller_heartbeat(self):
-    body = get_body(self.env.context)
+    body = get_body()
 
     return self._process_heartbeat(body)
 ```
