@@ -50,15 +50,15 @@
                             <field name="device_ids">
                                 <list>
                                     <field name="name"/>
-                                    <field name="device_model"/>
-                                    <field name="device_role"/>
+                                    <field name="device_model_id"/>
+                                    <!-- <field name="device_role"/> -->
                                     <field name="serial_number"/>
                                     <field name="port_or_channel"/>
                                     <field name="status"
                                            widget="badge"
-                                           decoration-success="status == 'active'"
-                                           decoration-danger="status == 'faulty'"
-                                           decoration-muted="status == 'disabled'"/>
+                                           decoration-success="status == 'online'"
+                                           decoration-danger="status == 'offline'"
+                                           decoration-warning="status == 'controller_offline'"/>
                                 </list>
                             </field>
                         </page>
@@ -81,17 +81,21 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="device_model"/>
-                <field name="device_role"/>
+                <field name="device_model_id"/>
+                <!-- <field name="device_role"/> -->
                 <field name="serial_number"/>
                 <field name="controller_id"/>
                 <field name="branch_id"/>
                 <field name="last_seen_at"/>
                 <field name="status"
                        widget="badge"
-                       decoration-success="status == 'active'"
-                       decoration-danger="status == 'faulty'"
-                       decoration-muted="status == 'disabled'"/>
+                       decoration-success="status == 'online'"
+                       decoration-danger="status == 'offline'"
+                       decoration-warning="status == 'controller_offline'"/>
+                <field name="employee_sync_status" 
+                       widget="badge" 
+                       decoration-success="employee_sync_status == 'synced'" 
+                       decoration-danger="employee_sync_status == 'out_of_sync'"/>
             </list>
         </field>
     </record>
@@ -107,12 +111,16 @@
                             <field name="name"/>
                             <field name="controller_id"/>
                             <field name="branch_id" readonly="1"/>
-                            <field name="device_role"/>
+                            <!-- <field name="device_role"/> -->
                             <field name="status"/>
+                            <field name="employee_sync_status" 
+                                   widget="badge" 
+                                   decoration-success="employee_sync_status == 'synced'" 
+                                   decoration-danger="employee_sync_status == 'out_of_sync'"/>
                         </group>
                         <group>
                             <field name="vendor"/>
-                            <field name="device_model"/>
+                            <field name="device_model_id"/>
                             <field name="serial_number"/>
                             <field name="port_or_channel"/>
                             <field name="firmware_version"/>
@@ -120,6 +128,7 @@
                         </group>
                         <group string="Audit">
                             <field name="last_seen_at" readonly="1"/>
+                            <field name="last_sync_at" readonly="1"/>
                             <field name="installed_at"/>
                         </group>
                     </group>

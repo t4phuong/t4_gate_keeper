@@ -1,3 +1,4 @@
+# pyrefly: ignore [missing-import]
 from odoo import models, fields, api, _
 
 ALGORITHM_TYPES = [
@@ -46,10 +47,7 @@ class GateKeeperAlgorithm(models.Model):
         string="Notes",
     )
 
-    _sql_constraints = [
-        (
-            "algorithm_version_unique",
-            "UNIQUE(name, algorithm_type, version, vendor)",
-            _("Algorithm version must be unique per name, type, and vendor."),
-        ),
-    ]
+    _algorithm_version_unique = models.Constraint(
+        "UNIQUE(name, algorithm_type, version, vendor)",
+        _("Algorithm version must be unique per name, type, and vendor.")
+    )

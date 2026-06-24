@@ -11,11 +11,7 @@ class GateKeeperBranch(models.Model):
         help="Name of the branch.",
     )
     
-    code = fields.Char(
-        string="Branch Code",
-        help="Short code for the branch.",
-    )
-    
+
     address = fields.Text(
         string="Address",
     )
@@ -33,3 +29,14 @@ class GateKeeperBranch(models.Model):
         "branch_id",
         string="Controllers",
     )
+
+    device_ids = fields.Many2many(
+        "t4.gate_keeper.device",
+        compute="_compute_device_ids",
+        string="Devices",
+        store=False,
+    )
+
+    def _compute_device_ids(self):
+        for branch in self:
+            branch.device_ids = branch.controller_ids.mapped("device_ids")

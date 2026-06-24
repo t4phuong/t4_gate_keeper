@@ -1,14 +1,15 @@
+# pyrefly: ignore [missing-import]
 from odoo import _, fields, models
 
-DEVICE_ROLES = [
-    ("input", "Input"),
-    ("output", "Output"),
-]
+# DEVICE_ROLES = [
+#     ("input", "Input"),
+#     ("output", "Output"),
+# ]
 
 DEVICE_STATUS = [
-    ("active", "Active"),
-    ("faulty", "Faulty"),
-    ("disabled", "Disabled"),
+    ("online", "Online"),
+    ("offline", "Offline"),
+    ("controller_offline", "Controller Offline"),
 ]
 
 
@@ -39,19 +40,20 @@ class GateKeeperDevice(models.Model):
         readonly=True,
     )
 
-    device_role = fields.Selection(
-        selection=DEVICE_ROLES,
-        string="Device Role",
-        required=True,
-        help="Defines whether the device reads data or receives output commands.",
-    )
+    # device_role = fields.Selection(
+    #     selection=DEVICE_ROLES,
+    #     string="Device Role",
+    #     required=True,
+    #     help="Defines whether the device reads data or receives output commands.",
+    # )
 
     vendor = fields.Char(
         string="Vendor",
         help="Device manufacturer, for example ZKTeco, Hikvision, or Suprema.",
     )
 
-    device_model = fields.Char(
+    device_model_id = fields.Many2one(
+        comodel_name="t4.gate_keeper.device_model",
         string="Device Model",
         help="Specific model name or number of the hardware device.",
     )
@@ -79,10 +81,8 @@ class GateKeeperDevice(models.Model):
     )
 
     algorithm_ids = fields.Many2many(
-        "t4.gate_keeper.algorithm",
-        "t4_gate_keeper_device_algorithm_rel",
-        "device_id",
-        "algorithm_id",
+        related="device_model_id.algorithm_ids",
+        readonly=True,
         string="Supported Algorithms",
         help="Face, fingerprint, or other recognition algorithms supported by this device.",
     )
@@ -90,7 +90,7 @@ class GateKeeperDevice(models.Model):
     status = fields.Selection(
         selection=DEVICE_STATUS,
         string="Status",
-        default="active",
+        default="offline",
         tracking=True,
     )
 
@@ -104,12 +104,31 @@ class GateKeeperDevice(models.Model):
         string="Installed On",
     )
 
-    _sql_constraints = [
-        (
-            "controller_port_unique",
-            "UNIQUE(controller_id, port_or_channel)",
-            _("Device port or channel must be unique per controller."),
-        ),
-    ]
+    last_sync_at = fields.Datetime(
+        string="Last Sync",
+        readonly=True,
+        help="Last successful permission or template synchronization.",
+    )
 
+    employee_sync_status = fields.Selection(
+        selection=[
+            ("synced", "Synced"),
+            ("out_of_sync", "Out of Sync"),
+        ],
+        string="Employee Sync Status",
+        compute="_compute_employee_sync_status",
+        help="Indicates whether the device has synchronized the latest employee updates.",
+    )
 
+    def _compute_employee_sync_status(self):
+        # Placeholder logic: Currently unhandled API, just return out_of_sync if not set
+        for device in self:
+            if device.last_sync_at:
+                device.employee_sync_status = "synced"
+            else:
+                device.employee_sync_status = "out_of_sync"
+
+    _controller_port_unique = models.Constraint(
+        "UNIQUE(controller_id, port_or_channel)",
+        _("Device port or channel must be unique per controller.")
+    )

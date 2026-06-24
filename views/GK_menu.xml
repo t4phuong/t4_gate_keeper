@@ -14,10 +14,12 @@
 
             parent="t4_gate_keeper_menu_root"
 
+            action="t4_gate_keeper_branch_action" 
+
             sequence="10"/>
   
 
-  <menuitem id="t4_gate_keeper_branch_menu" 
+  <!-- <menuitem id="t4_gate_keeper_branch_menu" 
   
             name="Branches" 
             
@@ -25,27 +27,23 @@
             
             action="t4_gate_keeper_branch_action" 
             
-            sequence="10"/>
+            sequence="10"/> -->
 
+  <!-- 
   <menuitem id="t4_gate_keeper_controller_menu" 
-            
             name="Controllers" 
-            
             parent="t4_gate_keeper_dashboard_menu" 
-            
             action="t4_gate_keeper_controller_action" 
-            
             sequence="20"/>
+  -->
 
+  <!--
   <menuitem id="t4_gate_keeper_device_menu" 
-  
             name="Devices" 
-            
             parent="t4_gate_keeper_dashboard_menu" 
-            
             action="t4_gate_keeper_device_action" 
-            
             sequence="30"/>
+  -->
 
 
 
@@ -73,22 +71,51 @@
 
   <!-- CONFIG: device tab -->
   <menuitem id="t4_gate_keeper_configuration_device_menu"
-
             name="Device"
-
             parent="t4_gate_keeper_configuration_menu"
-
             sequence="200"/>
 
     <menuitem id="t4_gate_keeper_algorithm_menu" 
-  
             name="Algorithms" 
-            
-            parent="t4_gate_keeper_configuration_menu" 
-            
+            parent="t4_gate_keeper_configuration_device_menu" 
             action="t4_gate_keeper_algorithm_action" 
-            
             sequence="40"/>
+
+    <menuitem id="t4_gate_keeper_configuration_device_list_menu" 
+            name="Devices" 
+            parent="t4_gate_keeper_configuration_device_menu" 
+            action="t4_gate_keeper_device_action" 
+            sequence="20"/>
+
+    <menuitem id="t4_gate_keeper_device_model_menu" 
+            name="Device Models" 
+            parent="t4_gate_keeper_configuration_device_menu" 
+            action="t4_gate_keeper_device_model_action" 
+            sequence="30"/>
+
+  <!-- CONFIG: employee tab -->
+  <menuitem id="t4_gate_keeper_configuration_employee_menu"
+            name="Employee"
+            parent="t4_gate_keeper_configuration_menu"
+            sequence="100"/>
+
+    <menuitem id="t4_gate_keeper_employee_menu" 
+            name="Employees" 
+            parent="t4_gate_keeper_configuration_employee_menu" 
+            action="t4_gate_keeper_employee_action" 
+            sequence="10"/>
+
+  <!-- CONFIG: controller tab -->
+  <menuitem id="t4_gate_keeper_configuration_controller_menu"
+            name="Controller"
+            parent="t4_gate_keeper_configuration_menu"
+            sequence="300"/>
+
+    <menuitem id="t4_gate_keeper_controller_sync_menu" 
+            name="Controllers" 
+            parent="t4_gate_keeper_configuration_controller_menu" 
+            action="t4_gate_keeper_controller_sync_action" 
+            sequence="50"/>
 
   
 </odoo>

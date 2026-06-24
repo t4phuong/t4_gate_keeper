@@ -6,7 +6,6 @@
         <field name="arch" type="xml">
             <list string="Branches">
                 <field name="name"/>
-                <field name="code"/>
                 <field name="company_id"/>
             </list>
         </field>
@@ -21,7 +20,6 @@
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="code"/>
                         </group>
                         <group>
                             <field name="company_id"/>
@@ -34,12 +32,27 @@
                                 <list>
                                     <field name="name"/>
                                     <field name="serial_number"/>
-                                    <field name="last_heartbeat_at"/>
-                                    <field name="last_sync_at"/>
                                     <field name="status"
                                            widget="badge"
                                            decoration-success="status == 'online'"
                                            decoration-danger="status == 'offline'"/>
+                                    <field name="employee_sync_status"
+                                           widget="badge" 
+                                           decoration-success="employee_sync_status == 'synced'" 
+                                           decoration-danger="employee_sync_status == 'out_of_sync'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Devices" name="devices">
+                            <field name="device_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="serial_number"/>
+                                    <field name="status"
+                                           widget="badge"
+                                           decoration-success="status == 'online'"
+                                           decoration-danger="status == 'offline'"
+                                           decoration-warning="status == 'controller_offline'"/>
                                 </list>
                             </field>
                         </page>

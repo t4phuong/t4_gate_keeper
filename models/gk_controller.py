@@ -104,21 +104,43 @@ class T4GateKeeperController(models.Model):
         help="Installation date used for maintenance planning.",
     )
 
-    _sql_constraints = [
-        (
-            "serial_number_unique",
-            "UNIQUE(serial_number)",
-            _("Controller serial number must be unique."),
-        ),
-    ]
+    employee_sync_status = fields.Selection(
+        selection=[
+            ("synced", "Synced"),
+            ("out_of_sync", "Out of Sync"),
+        ],
+        string="Employee Sync Status",
+        compute="_compute_employee_sync_status",
+        help="Indicates whether the controller has synchronized the latest employee updates.",
+    )
+
+    def _compute_employee_sync_status(self):
+        for controller in self:
+            domain = controller._get_employee_sync_domain(controller)
+            unsynced_count = self.env["t4.gate_keeper.employee"].search_count(domain)
+            if unsynced_count == 0:
+                controller.employee_sync_status = "synced"
+            else:
+                controller.employee_sync_status = "out_of_sync"
+
+    _serial_number_unique = models.Constraint(
+        "UNIQUE(serial_number)",
+        _("Controller serial number must be unique.")
+    )
 
     ################################## ENDPOINT ###############################################
+    def _find_controller(self, serial_number):
+        return self.search([
+            ("serial_number", "=", serial_number),
+        ], limit=1)
+    
+
     @endpoint(name="ControllerHeartbeat")
     def controller_heartbeat(self):
         body = get_body()
         serial_number = body.get("serial_number", False)
 
-        controller = self._find_heartbeat_controller(serial_number)
+        controller = self._find_controller(serial_number)
         if not controller:
             raise ValidationError(f"Can not find controller with serial {serial_number}")
 
@@ -129,12 +151,58 @@ class T4GateKeeperController(models.Model):
         })
 
 
-    def _find_heartbeat_controller(self, serial_number):
-        return self.search([
-            ("serial_number", "=", serial_number),
-        ], limit=1)
+    @endpoint(name="ControllerEmployeeSync")
+    def controller_employee_sync(self):
+        body = get_body()
+        serial_number = body.get("serial_number", False)
 
+        if not serial_number:
+            raise ValidationError(_("Serial number is required."))
 
-    @endpoint(name="test")
-    def test(self):
-        return ""
+        controller = self._find_controller(serial_number)
+        if not controller:
+            raise ValidationError(_("Can not find controller with serial %s") % serial_number)
+
+        domain = self._get_employee_sync_domain(controller)
+        employees = self._get_employees_to_sync(domain)
+
+        current_time = fields.Datetime.now()
+        
+        if not employees:
+            controller.write({
+                "last_sync_at": current_time,
+                "status": "online",
+            })
+            return {
+                "message": _("Already up-to-date"),
+                "data": []
+            }
+            
+        data = []
+        for emp in employees:
+            data.append({
+                "name": emp.name,
+                "emp_id": emp.emp_id,
+            })
+            
+        controller.write({
+            "last_sync_at": current_time,
+            "status": "online",
+        })
+        
+        return data
+
+    def _get_employee_sync_domain(self, controller):
+        domain = [
+            '|', 
+            ('branch_id', '=', False), 
+            ('branch_id', '=', controller.branch_id.id)
+        ]
+        
+        if controller.last_sync_at:
+            domain.append(('write_date', '>', controller.last_sync_at))
+            
+        return domain
+
+    def _get_employees_to_sync(self, domain):
+        return self.env["t4.gate_keeper.employee"].search(domain)

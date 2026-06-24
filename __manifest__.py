@@ -7,7 +7,9 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base', 'hr'],
+
+    'post_init_hook': 'post_init_hook',
 
     # always loaded
     'data': [
@@ -16,7 +18,12 @@
         'data/scheduler_cron.xml',
         'views/gk_branch_views.xml',
         'views/gate_keeper_views.xml',
+        'views/gk_device_model_views.xml',
         'views/gk_attendance_log_views.xml',
+        'views/gk_employee_biometric_views.xml',
+        'views/gk_employee_views.xml',
+        'views/hr_employee_views.xml',
+        'views/gk_controller_sync_views.xml',
         'views/GK_menu.xml'
     ],
 }
