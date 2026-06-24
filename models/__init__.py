@@ -6,5 +6,5 @@ from . import gk_controller
 from . import gk_scheduler
 from . import gk_employee
 from . import gk_employee_biometric
-from . import gk_attendance_log
+from . import gk_access_log
 from . import hr_employee

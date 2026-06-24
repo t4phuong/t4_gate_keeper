@@ -7,7 +7,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'hr'],
+    'depends': ['base', 'hr', 'hr_attendance'],
 
     'post_init_hook': 'post_init_hook',
 
@@ -19,7 +19,7 @@
         'views/gk_branch_views.xml',
         'views/gate_keeper_views.xml',
         'views/gk_device_model_views.xml',
-        'views/gk_attendance_log_views.xml',
+        'views/gk_access_log_views.xml',
         'views/gk_employee_biometric_views.xml',
         'views/gk_employee_views.xml',
         'views/hr_employee_views.xml',

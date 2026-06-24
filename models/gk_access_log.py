@@ -1,3 +1,4 @@
+# pyrefly: ignore [missing-import]
 from odoo import models, fields, _
 
 SYNC_STATUS = [
@@ -19,9 +20,9 @@ DIRECTION = [
     ('out', 'Check-out'),
 ]
 
-class GateKeeperAttendanceLog(models.Model):
-    _name = "t4.gate_keeper.attendance_log"
-    _description = "Gate Keeper Attendance Log"
+class GateKeeperAccessLog(models.Model):
+    _name = "t4.gate_keeper.access_log"
+    _description = "Gate Keeper Access Log"
     _order = "access_time desc"
 
     controller_id = fields.Many2one(

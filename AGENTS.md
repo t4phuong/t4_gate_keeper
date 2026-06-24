@@ -1,5 +1,8 @@
 # AGENTS.md
 
+> [!CAUTION]
+> **CRITICAL REMINDER**: You MUST ALWAYS ask the developer for explicit permission/approval before modifying, creating, or deleting ANY files, or changing any architectural logic, models, fields, database structures, or security rules. DO NOT proceed without developer confirmation.
+
 ## Project Overview
 
 ### Project Name
@@ -25,6 +28,47 @@ The system manages:
 * Company-based ownership and visibility
 
 The project is currently in the MVP phase and focuses on controller and device management.
+
+### Project Structure
+
+```text
+t4_gate_keeper/
+├── data/
+│   └── scheduler_cron.xml
+├── i18n/
+│   └── vi.po
+├── models/
+│   ├── __init__.py
+│   ├── gk_access_log.py
+│   ├── gk_algorithm.py
+│   ├── gk_authen_info.py
+│   ├── gk_branch.py
+│   ├── gk_controller.py
+│   ├── gk_device.py
+│   ├── gk_device_model.py
+│   ├── gk_employee.py
+│   ├── gk_employee_biometric.py
+│   ├── gk_scheduler.py
+│   └── hr_employee.py
+├── security/
+│   ├── ir.model.access.csv
+│   └── security.xml
+├── views/
+│   ├── GK_menu.xml
+│   ├── gate_keeper_views.xml
+│   ├── gk_access_log_views.xml
+│   ├── gk_branch_views.xml
+│   ├── gk_controller_sync_views.xml
+│   ├── gk_device_model_views.xml
+│   ├── gk_employee_biometric_views.xml
+│   ├── gk_employee_views.xml
+│   └── hr_employee_views.xml
+├── .gitignore
+├── AGENTS.md
+├── __init__.py
+├── __manifest__.py
+└── document.txt
+```
 
 ---
 
@@ -61,6 +105,31 @@ Examples:
 * Access sensor
 
 A Device must always belong to a Controller.
+
+---
+
+## Domain Hierarchy & Synchronization
+
+The database entities follow this hierarchy:
+* **Branch** (`t4.gate_keeper.branch`) contains multiple **Controllers**.
+* **Controller** (`t4.gate_keeper.controller`) manages multiple **Devices**.
+* **Device** (`t4.gate_keeper.device`) has a Many2one relationship with a **Device Model** (`t4.gate_keeper.device_model`).
+* **Device Model** can support multiple **Algorithms** (`t4.gate_keeper.algorithm`).
+* **Employee** (`t4.gate_keeper.employee`) is associated with **Algorithms** via the **Employee Biometric** relationship table (`t4.gate_keeper.employee.biometric`).
+  * Each employee has distinct biometric templates/data tailored for specific algorithms.
+  * This allows sync templates to devices that utilize the matching biometric algorithm.
+
+---
+
+## Employee Separation & ID Workflow
+
+> [!WARNING]
+> **CRITICAL ARCHITECTURAL RULE**: The employee record in Gate Keeper (`t4.gate_keeper.employee`) must remain completely separate from Odoo's standard HR employee record (`hr.employee`).
+
+### Employee Code (emp_id) Policy:
+- Always generate a distinct, independent, unique identifier (`emp_id`) specifically for the Gate Keeper employee record.
+- **DO NOT** reuse or prioritize the `hr.employee` standard identifier/code.
+- **RATIONALE**: Physical biometric devices register templates/fingerprints/faces tied directly to a fixed biometric ID hash. If we used standard HR employee codes, any subsequent change to the HR employee code in Odoo would break the device-side association, as those hardware-bound hashes cannot easily be changed. Using a separate, permanent, independent `emp_id` ensures synchronization stability.
 
 ---
 
@@ -148,10 +217,10 @@ Use snake_case naming.
 Examples:
 
 ```text
-controller.py
-device.py
-controller_views.xml
-device_views.xml
+gk_controller.py
+gk_device.py
+gk_controller_sync_views.xml
+gk_device_model_views.xml
 security.xml
 ir.model.access.csv
 ```
@@ -626,6 +695,28 @@ def controller_heartbeat(self):
 
     return self._process_heartbeat(body)
 ```
+
+---
+
+## Endpoint Response Structure
+
+The endpoint registration and decoration layer automatically handles response formatting:
+
+### 1. Non-dictionary Return Values
+If the endpoint method returns a value that is NOT a dictionary (e.g., a List, String, Boolean, etc.), the framework wraps it into a standard success response where the returned value is assigned to the `data` field:
+```json
+{
+    "success": true,
+    "message": "Successful",
+    "data": <returned_value>
+}
+```
+
+### 2. Dictionary Return Values
+If the endpoint method returns a dictionary:
+- The framework attempts to extract `"data"` and `"message"` keys using `.get()`.
+- If **neither** key is found in the dictionary, the entire returned dictionary is treated as the `"data"` payload.
+- If **at least one** of `"data"` or `"message"` is found, the framework uses the provided values for the JSON response keys.
 
 ---
 

@@ -4,7 +4,7 @@ access_t4_gate_keeper_controller,t4.gate_keeper.controller,model_t4_gate_keeper_
 access_t4_gate_keeper_device,t4.gate_keeper.device,model_t4_gate_keeper_device,base.group_user,1,1,1,1
 access_t4_gate_keeper_device_model,t4.gate_keeper.device_model,model_t4_gate_keeper_device_model,base.group_user,1,1,1,1
 access_t4_gate_keeper_algorithm,t4.gate_keeper.algorithm,model_t4_gate_keeper_algorithm,base.group_user,1,1,1,1
-access_t4_gate_keeper_attendance_log,t4.gate_keeper.attendance_log,model_t4_gate_keeper_attendance_log,base.group_user,1,1,1,1
+access_t4_gate_keeper_access_log,t4.gate_keeper.access_log,model_t4_gate_keeper_access_log,base.group_user,1,1,1,1
 access_t4_gate_keeper_employee,t4.gate_keeper.employee,model_t4_gate_keeper_employee,base.group_user,1,1,1,1
 access_t4_gate_keeper_employee_biometric,t4.gate_keeper.employee.biometric,model_t4_gate_keeper_employee_biometric,base.group_user,1,1,1,1
 

@@ -1,7 +1,10 @@
 import logging
 
+# pyrefly: ignore [missing-import]
 from odoo import _, fields, models
+# pyrefly: ignore [missing-import]
 from odoo.addons.t4_coreapi.utils import endpoint, get_body, set_response
+# pyrefly: ignore [missing-import]
 from odoo.exceptions import ValidationError
 
 
@@ -137,7 +140,7 @@ class T4GateKeeperController(models.Model):
 
     @endpoint(name="ControllerHeartbeat")
     def controller_heartbeat(self):
-        body = get_body()
+        body = get_body(self.env)
         serial_number = body.get("serial_number", False)
 
         controller = self._find_controller(serial_number)
