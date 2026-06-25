@@ -1,7 +1,7 @@
 import logging
 
 # pyrefly: ignore [missing-import]
-from odoo import _, fields, models
+from odoo import api, _, fields, models
 # pyrefly: ignore [missing-import]
 from odoo.addons.t4_coreapi.utils import endpoint, get_body, set_response
 # pyrefly: ignore [missing-import]
@@ -202,6 +202,20 @@ class T4GateKeeperController(models.Model):
         })
         
         return data
+
+    def write(self, vals):
+        res = super(T4GateKeeperController, self).write(vals)
+        if 'status' in vals:
+            for controller in self:
+                if controller.status == 'online':
+                    devices_to_update = controller.device_ids.filtered(lambda d: d.status == 'controller_offline')
+                    if devices_to_update:
+                        devices_to_update.write({'status': 'online'})
+                else:
+                    devices_to_update = controller.device_ids.filtered(lambda d: d.status != 'controller_offline')
+                    if devices_to_update:
+                        devices_to_update.write({'status': 'controller_offline'})
+        return res
 
     def _get_employee_sync_domain(self, controller):
         domain = [

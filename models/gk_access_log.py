@@ -114,7 +114,7 @@ class GateKeeperAccessLog(models.Model):
             param = reason_en.split('(')[-1].split(')')[0]
             reason = reason % param
 
-            warning_type = self.env["t4.gate_keeper.area_warning_type"].search([("code", "=", "outside_hours")], limit=1)
+            warning_type = self.env["t4.gate_keeper.area_warning_type"].search([("code", "=", "invalid_access")], limit=1)
             if warning_type:
                 self.env["t4.gate_keeper.area_warning"].create({
                     "area_id": self.area_id.id,

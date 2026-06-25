@@ -828,25 +828,25 @@ Tracks lifecycle-bound, actionable warnings at the Area level.
   * `action_resolve()`: Marks specific warning records as resolved.
 
 ### 2. Area Warning Type Model (`t4.gate_keeper.area_warning_type`)
-Database-driven category configuration for warnings, allowing dynamic warning type definitions through the user interface.
-* **Fields**:
-  * `name`: Category display name (Char, required).
-  * `code`: Unique code key (Char, required, unique index) used in backend code.
-  * `description`: Descriptive notes on when this warning triggers (Text).
+Database-driven category configuration for warnings. The system bootstraps exactly two standard types:
+* `invalid_access`: Unauthorized access or access outside standard branch working hours.
+* `device_issue`: Connection issues (device offline, controller offline).
 
 ### 3. Area Status Compute (`t4.gate_keeper.area`)
 * `status` is a stored compute field that depends on `warning_ids.state`.
-* If any warning in the area is `active`, `status` evaluates to `warning` (represented as a yellow/orange badge).
-* Clicking **"Clear Warnings"** on the Area form or **"Resolve"** on an individual warning record marks the warning as `resolved`, which automatically resets Area status back to `normal`.
-
+* If any warning in the area is `warning` (active), `status` evaluates to `warning` (represented as a yellow/orange badge).
+* Resolving warnings resets the Area status back to `normal`.
 
 ### 4. Access Log Hook & Rule Engine (`t4.gate_keeper.access_log`)
-* `area_id` is a related stored field (`device_id.area_id`).
-* On record creation (`create()`), a hook checks the security policies on the log:
-  * Checks if the `access_time` falls on a weekend or outside standard working hours (08:00 - 17:00).
-  * This check is **timezone-aware** and runs against the local timezone configured at the physical **Branch** (`self.branch_id.timezone`) rather than the active Odoo user's timezone.
-  * If a violation is detected, an active `t4.gate_keeper.area_warning` is generated.
+* `area_id` is a related stored field.
+* On record creation (`create()`), a timezone-aware hook checks if the `access_time` falls outside standard working hours (08:00 - 17:00) or on weekends using the branch's local timezone.
+* If a violation is detected, an active `t4.gate_keeper.area_warning` of type `invalid_access` is generated.
 
+### 5. Automated Device & Controller status triggers
+* When a Device (`t4.gate_keeper.device`) status changes to `offline` or `controller_offline`: if it is in an Area, an active warning of type `device_issue` is automatically created (unless one already exists).
+* When a Device status changes to `online`: all active `device_issue` warnings for the device are resolved.
+* When a Controller (`t4.gate_keeper.controller`) status changes to `online`: it cascades `online` status to all parented devices that were in `controller_offline` state.
+* When a Controller status changes to anything other than `online`: it cascades `controller_offline` status to all parented devices that were not already in `controller_offline` state.
 
 ## Branch Timezone Synchronization
 
@@ -859,5 +859,3 @@ To ensure physical locations correctly evaluate time checks, the system is timez
 * Both Controllers (`t4.gate_keeper.controller`) and Devices (`t4.gate_keeper.device`) synchronize timezone configuration from their parent Branch:
   * `timezone` is a stored, related Selection field (`related="branch_id.timezone", store=True`).
   * When a Branch's timezone is updated, Odoo's dependency engine automatically updates the timezone for all child Controllers and Devices.
-
-

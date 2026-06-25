@@ -1,5 +1,5 @@
 # pyrefly: ignore [missing-import]
-from odoo import _, fields, models
+from odoo import api, _, fields, models
 
 # DEVICE_ROLES = [
 #     ("input", "Input"),
@@ -144,6 +144,66 @@ class GateKeeperDevice(models.Model):
                 device.employee_sync_status = "synced"
             else:
                 device.employee_sync_status = "out_of_sync"
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super(GateKeeperDevice, self).create(vals_list)
+        for record in records:
+            if record.status in ('offline', 'controller_offline'):
+                record._handle_device_issue_warning()
+        return records
+
+    def write(self, vals):
+        res = super(GateKeeperDevice, self).write(vals)
+        if 'status' in vals or 'area_id' in vals:
+            for record in self:
+                if record.status in ('offline', 'controller_offline'):
+                    record._handle_device_issue_warning()
+                elif record.status == 'online':
+                    record._resolve_device_issue_warnings()
+        return res
+
+    def _handle_device_issue_warning(self):
+        self.ensure_one()
+        if not self.area_id:
+            self._resolve_device_issue_warnings()
+            return
+
+        warning_type = self.env["t4.gate_keeper.area_warning_type"].search([("code", "=", "device_issue")], limit=1)
+        if not warning_type:
+            return
+
+        active_warning = self.env["t4.gate_keeper.area_warning"].search([
+            ("device_id", "=", self.id),
+            ("warning_type_id", "=", warning_type.id),
+            ("state", "=", "warning"),
+        ], limit=1)
+
+        if active_warning:
+            if active_warning.area_id != self.area_id:
+                active_warning.write({"area_id": self.area_id.id})
+        else:
+            status_label = dict(self._fields['status'].selection).get(self.status, self.status)
+            self.env["t4.gate_keeper.area_warning"].create({
+                "area_id": self.area_id.id,
+                "device_id": self.id,
+                "warning_type_id": warning_type.id,
+                "description": _("Device %s is offline. Status: %s") % (self.name, status_label),
+            })
+
+    def _resolve_device_issue_warnings(self):
+        self.ensure_one()
+        warning_type = self.env["t4.gate_keeper.area_warning_type"].search([("code", "=", "device_issue")], limit=1)
+        if not warning_type:
+            return
+
+        active_warnings = self.env["t4.gate_keeper.area_warning"].search([
+            ("device_id", "=", self.id),
+            ("warning_type_id", "=", warning_type.id),
+            ("state", "=", "warning"),
+        ])
+        if active_warnings:
+            active_warnings.action_resolve()
 
     _controller_port_unique = models.Constraint(
         "UNIQUE(controller_id, port_or_channel)",
