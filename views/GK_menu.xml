@@ -69,11 +69,30 @@
 
             sequence="200"/>
 
+  <!-- CONFIG: warning tab -->
+  <menuitem id="t4_gate_keeper_configuration_warning_menu"
+            name="Area"
+            parent="t4_gate_keeper_configuration_menu"
+            sequence="150"/>
+
+    <menuitem id="t4_gate_keeper_area_menu" 
+            name="Areas" 
+            parent="t4_gate_keeper_configuration_warning_menu" 
+            action="t4_gate_keeper_area_action" 
+            sequence="10"/>
+
+    <menuitem id="t4_gate_keeper_area_warning_type_menu" 
+            name="Warning Types" 
+            parent="t4_gate_keeper_configuration_warning_menu" 
+            action="t4_gate_keeper_area_warning_type_action" 
+            sequence="20"/>
+
   <!-- CONFIG: device tab -->
   <menuitem id="t4_gate_keeper_configuration_device_menu"
             name="Device"
             parent="t4_gate_keeper_configuration_menu"
             sequence="200"/>
+
 
     <menuitem id="t4_gate_keeper_algorithm_menu" 
             name="Algorithms" 

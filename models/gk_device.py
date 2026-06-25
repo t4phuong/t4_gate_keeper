@@ -34,10 +34,27 @@ class GateKeeperDevice(models.Model):
     )
 
     branch_id = fields.Many2one(
+        comodel_name="t4.gate_keeper.branch",
         related="controller_id.branch_id",
         string="Branch",
         store=True,
         readonly=True,
+    )
+
+    timezone = fields.Selection(
+        related="controller_id.branch_id.timezone",
+        string="Timezone",
+        readonly=True,
+        store=True,
+    )
+
+
+
+    area_id = fields.Many2one(
+        comodel_name="t4.gate_keeper.area",
+        string="Area",
+        domain="[('branch_id', '=', branch_id)]",
+        help="Area within the branch where this device is located.",
     )
 
     # device_role = fields.Selection(

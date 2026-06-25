@@ -41,4 +41,19 @@
         <field name="domain_force">['|', ('employee_id.branch_id', '=', False), ('employee_id.branch_id.company_id', 'child_of', company_ids)]</field>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
+
+    <record id="t4_gate_keeper_area_company_rule" model="ir.rule">
+        <field name="name">Gate Keeper Area: multi-company access</field>
+        <field name="model_id" ref="model_t4_gate_keeper_area"/>
+        <field name="domain_force">[('branch_id.company_id', 'child_of', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="t4_gate_keeper_area_warning_company_rule" model="ir.rule">
+        <field name="name">Gate Keeper Area Warning: multi-company access</field>
+        <field name="model_id" ref="model_t4_gate_keeper_area_warning"/>
+        <field name="domain_force">[('area_id.branch_id.company_id', 'child_of', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
 </odoo>
+

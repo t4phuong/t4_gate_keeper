@@ -45,6 +45,14 @@ class T4GateKeeperController(models.Model):
         index=True,
     )
 
+    timezone = fields.Selection(
+        related="branch_id.timezone",
+        string="Timezone",
+        readonly=True,
+        store=True,
+    )
+
+
     device_ids = fields.One2many(
         "t4.gate_keeper.device",
         "controller_id",

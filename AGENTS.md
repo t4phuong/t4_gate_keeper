@@ -803,3 +803,61 @@ The responsibility of `t4_gate_keeper` is only:
 
 ```
 ```
+
+
+# ADDONS
+
+## Area Warnings Management
+
+To allow users to monitor security events at a high logical level (Area level) rather than inspecting raw access logs, the system includes a dedicated warnings mechanism:
+
+### 1. Area Warning Model (`t4.gate_keeper.area_warning`)
+Tracks lifecycle-bound, actionable warnings at the Area level.
+* **Fields**:
+  * `area_id`: Linked Area (Many2one, required).
+  * `device_id`: Source device (Many2one).
+  * `employee_id`: Violated employee (Many2one).
+  * `access_log_id`: Related raw Access Log (Many2one).
+  * `warning_type_id`: Type of warning configuration record (Many2one, required, linked to `t4.gate_keeper.area_warning_type`).
+  * `description`: Auto-generated violation detail text.
+  * `state`: Status of warning (`active` or `resolved`).
+  * `resolved_by_id`: User who cleared the warning (Many2one).
+  * `resolved_at`: Datetime of resolution.
+  * `resolution_notes`: Reviewer's notes.
+* **Methods**:
+  * `action_resolve()`: Marks specific warning records as resolved.
+
+### 2. Area Warning Type Model (`t4.gate_keeper.area_warning_type`)
+Database-driven category configuration for warnings, allowing dynamic warning type definitions through the user interface.
+* **Fields**:
+  * `name`: Category display name (Char, required).
+  * `code`: Unique code key (Char, required, unique index) used in backend code.
+  * `description`: Descriptive notes on when this warning triggers (Text).
+
+### 3. Area Status Compute (`t4.gate_keeper.area`)
+* `status` is a stored compute field that depends on `warning_ids.state`.
+* If any warning in the area is `active`, `status` evaluates to `warning` (represented as a yellow/orange badge).
+* Clicking **"Clear Warnings"** on the Area form or **"Resolve"** on an individual warning record marks the warning as `resolved`, which automatically resets Area status back to `normal`.
+
+
+### 4. Access Log Hook & Rule Engine (`t4.gate_keeper.access_log`)
+* `area_id` is a related stored field (`device_id.area_id`).
+* On record creation (`create()`), a hook checks the security policies on the log:
+  * Checks if the `access_time` falls on a weekend or outside standard working hours (08:00 - 17:00).
+  * This check is **timezone-aware** and runs against the local timezone configured at the physical **Branch** (`self.branch_id.timezone`) rather than the active Odoo user's timezone.
+  * If a violation is detected, an active `t4.gate_keeper.area_warning` is generated.
+
+
+## Branch Timezone Synchronization
+
+To ensure physical locations correctly evaluate time checks, the system is timezone-aware at the Branch level:
+
+### 1. Branch Timezone Field (`t4.gate_keeper.branch`)
+* Added `timezone` field to configure the geographical timezone of each Branch using standard `pytz.common_timezones` (e.g. `Asia/Ho_Chi_Minh`, `Asia/Tokyo`).
+
+### 2. Controller & Device Synchronization
+* Both Controllers (`t4.gate_keeper.controller`) and Devices (`t4.gate_keeper.device`) synchronize timezone configuration from their parent Branch:
+  * `timezone` is a stored, related Selection field (`related="branch_id.timezone", store=True`).
+  * When a Branch's timezone is updated, Odoo's dependency engine automatically updates the timezone for all child Controllers and Devices.
+
+

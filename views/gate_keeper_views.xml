@@ -31,6 +31,7 @@
                             <field name="serial_number"/>
                             <field name="branch_id"/>
                             <field name="connection_type"/>
+                            <field name="timezone"/>
                         </group>
                         <group>
                             <field name="status"/>
@@ -86,6 +87,7 @@
                 <field name="serial_number"/>
                 <field name="controller_id"/>
                 <field name="branch_id"/>
+                <field name="area_id"/>
                 <field name="last_seen_at"/>
                 <field name="status"
                        widget="badge"
@@ -111,6 +113,8 @@
                             <field name="name"/>
                             <field name="controller_id"/>
                             <field name="branch_id" readonly="1"/>
+                            <field name="timezone"/>
+                            <field name="area_id"/>
                             <!-- <field name="device_role"/> -->
                             <field name="status"/>
                             <field name="employee_sync_status" 

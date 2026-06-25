@@ -1,4 +1,6 @@
 from . import models
+from . import utils
+
 
 def post_init_hook(env):
     hr_employees = env['hr.employee'].search([])

@@ -15,7 +15,10 @@
     'data': [
         'security/ir.model.access.csv',
         'security/security.xml',
+        'data/gk_area_warning_type_data.xml',
         'data/scheduler_cron.xml',
+
+        'views/gk_area_views.xml',
         'views/gk_branch_views.xml',
         'views/gate_keeper_views.xml',
         'views/gk_device_model_views.xml',
